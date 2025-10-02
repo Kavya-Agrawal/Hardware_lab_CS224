@@ -1,0 +1,34 @@
+20080004; // main: addi $t0, $zero, 4          t0 has array base address R8 = 4
+2009000A; // addi $t1, $zero, 10               t1 has value to be loaded R9 = 10
+00005020; // add $t2, $zero, $zero             t2 is loop counter R10 = 0
+200B0005; // addi $t3, $zero, 5                t3 is number of times loop runs R11 = 5
+
+AD090000; // store_loop: sw $t1, 0($t0)        store 10 at current index pointer
+21080004; // addi $t0, $t0, 4                  MEM[4] = 10 8 = 10 12 = 10 16 = 10 20 = 10
+214A0001; // addi $t2, $t2, 1
+014B702A; // slt $t6, $t2, $t3
+11C00001; // beq $t6, $zero, store_done
+08000004; // j store_loop
+
+20040004; // store_done: addi $a0, $zero, 4
+200B0005; // addi $a1, $zero, 5
+0C00000F; // jal sum_array
+
+AC020004; // sw $v0, 4($zero)
+FC000000; // exit (custom opcode 0xFC)
+
+00044020; // sum_array: add $t0, $zero, $a0
+000B4820; // add $t1, $zero, $a1
+00005020; // add $t2, $zero, $zero
+00005820; // add $t3, $zero, $zero
+
+8D0F0000; // sum_loop: lw $t7, 0($t0)
+014F5020; // add $t2, $t2, $t7
+21080004; // addi $t0, $t0, 4
+216B0001; // addi $t3, $t3, 1
+0169602A; // slt $t4, $t3, $t1
+11800001; // beq $t4, $zero, sum_done
+08000013; // j sum_loop
+
+01401020; // sum_done: add $v0, $t2, $zero
+17E00008; // jr $ra
